@@ -1,0 +1,96 @@
+# ================================
+# Netflix Data Analysis Project
+# ================================
+
+# Import Libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load Dataset
+df = pd.read_csv("netflix_titles.csv")
+
+# -------------------------------
+# 1. Display Basic Information
+# -------------------------------
+print("First 5 Rows:")
+print(df.head())
+
+print("\nDataset Info:")
+print(df.info())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# -------------------------------
+# 2. Data Cleaning
+# -------------------------------
+# Fill missing values
+df['country'].fillna('Unknown', inplace=True)
+df['director'].fillna('Not Available', inplace=True)
+df['cast'].fillna('Not Available', inplace=True)
+df['rating'].fillna('Not Rated', inplace=True)
+
+# Convert date column to datetime
+df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
+
+# Create new column for year added
+df['year_added'] = df['date_added'].dt.year
+
+# -------------------------------
+# 3. Exploratory Data Analysis
+# -------------------------------
+
+# Count of Movies vs TV Shows
+print("\nCount of Content Types:")
+print(df['type'].value_counts())
+
+# Top 10 countries producing content
+print("\nTop 10 Countries:")
+print(df['country'].value_counts().head(10))
+
+# Most common ratings
+print("\nMost Common Ratings:")
+print(df['rating'].value_counts().head(10))
+
+# -------------------------------
+# 4. Data Visualization
+# -------------------------------
+
+# Movies vs TV Shows Count Plot
+plt.figure()
+sns.countplot(x='type', data=df)
+plt.title("Movies vs TV Shows on Netflix")
+plt.show()
+
+# Top 10 Content Producing Countries
+top_countries = df['country'].value_counts().head(10)
+plt.figure()
+top_countries.plot(kind='bar')
+plt.title("Top 10 Content Producing Countries")
+plt.xlabel("Country")
+plt.ylabel("Number of Shows")
+plt.show()
+
+# Content Added Over Years
+plt.figure()
+df['year_added'].value_counts().sort_index().plot(kind='line')
+plt.title("Content Added Over Years")
+plt.xlabel("Year")
+plt.ylabel("Number of Shows Added")
+plt.show()
+
+# Ratings Distribution
+plt.figure()
+sns.countplot(y='rating', data=df, order=df['rating'].value_counts().index[:10])
+plt.title("Top Ratings Distribution on Netflix")
+plt.show()
+
+# -------------------------------
+# 5. Key Insights Output
+# -------------------------------
+print("\n--- Key Insights ---")
+print("1. Netflix has more Movies than TV Shows.")
+print("2. USA and India produce the highest content.")
+print("3. Rapid growth observed after 2015.")
+print("4. Most common ratings are TV-MA and TV-14.")
